@@ -14,6 +14,7 @@ using SalesWebMvc.Models;
 
 // Add by Developer
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using SalesWebMvc.Data;
 
 namespace SalesWebMvc
 {
@@ -57,14 +58,18 @@ namespace SalesWebMvc
                         mysqlOptions.ServerVersion(new Version(5, 5, 62), ServerType.MySql);
                     });
             });
+
+            services.AddScoped<SeedingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        //public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, SeedingService seedingService)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                seedingService.Seed();
             }
             else
             {
