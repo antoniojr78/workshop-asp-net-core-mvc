@@ -12,6 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using SalesWebMvc.Models;
 
+// Add by Developer
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+
 namespace SalesWebMvc
 {
     public class Startup
@@ -36,9 +39,24 @@ namespace SalesWebMvc
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            /*
             services.AddDbContext<SalesWebMvcContext>(options =>
                     options.UseMySql(Configuration.GetConnectionString("SalesWebMvcContext"), builder =>
                         builder.MigrationsAssembly("SalesWebMvc")));
+
+            Soluciona erro no comando create do SQL Como: `BirthDate` datetime(6) NOT NULL,
+            Em vez de: `BirthDate` datetime NOT NULL,
+            */
+
+            services.AddDbContextPool<SalesWebMvcContext>(options =>
+            {
+                options.UseMySql(Configuration.GetConnectionString("SalesWebMvcContext"),
+                    mysqlOptions =>
+                    {
+                        mysqlOptions.MigrationsAssembly("SalesWebMvc");
+                        mysqlOptions.ServerVersion(new Version(5, 5, 62), ServerType.MySql);
+                    });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
